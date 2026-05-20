@@ -181,7 +181,7 @@ public class RaceRenderer extends GLJPanel implements GLEventListener {
 
     @Override public void dispose(GLAutoDrawable d) {}
 
-    // ---------- Métodos de dibujo ----------
+    // Métodos de dibujo 
     private void drawSky(GL2 gl) {
         gl.glPushAttrib(GL2.GL_TEXTURE_BIT);
         gl.glPushMatrix();
@@ -274,65 +274,89 @@ public class RaceRenderer extends GLJPanel implements GLEventListener {
     private void drawHorse(GL2 gl, float[] color, float x, float y, float z) {
         gl.glPushMatrix();
         gl.glTranslatef(x, y, z);
-        gl.glScalef(0.8f, 0.8f, 1.2f);
+
+        // Parámetros de animación
+        float ciclo = z * 3.0f;
+        float reboteCuerpo = (float) Math.sin(ciclo) * 0.12f;
+        float balanceoCabeza = (float) Math.sin(ciclo) * 0.08f;
+        float fasePatas = (float) Math.sin(ciclo);
+
+        gl.glScalef(0.7f, 0.7f, 1.0f);
         setMaterial(gl, color);
 
-        // ----- Cuerpo -----
+        // CUERPO 
         gl.glPushMatrix();
-        gl.glTranslatef(0, 1.0f, 0);
-        gl.glScalef(0.7f, 0.6f, 1.2f);  
-        glut.glutSolidSphere(0.8, 16, 16);
+        gl.glTranslatef(0, 0.9f + reboteCuerpo, 0);
+        gl.glScalef(0.5f, 0.35f, 0.9f);  
+        glut.glutSolidCube(1.0f);
         gl.glPopMatrix();
 
-        // ----- Cuello -----
+        // PECHO 
         gl.glPushMatrix();
-        gl.glTranslatef(0, 1.2f, 0.6f);
-        gl.glRotatef(-35, 1, 0, 0);
-        gl.glPushMatrix();
-        gl.glScalef(0.25f, 0.7f, 0.25f);
-        glut.glutSolidCone(0.5, 1.0, 10, 2);
-        gl.glPopMatrix();
+        gl.glTranslatef(0, 0.75f + reboteCuerpo, 0.55f);
+        gl.glScalef(0.45f, 0.45f, 0.3f);
+        glut.glutSolidCube(1.0f);
         gl.glPopMatrix();
 
-        // ----- Cabeza -----
+        // CUELLO 
         gl.glPushMatrix();
-        gl.glTranslatef(0, 1.7f, 1.0f);
-        gl.glScalef(0.35f, 0.3f, 0.4f);
-        glut.glutSolidSphere(0.7, 12, 12);
+        gl.glTranslatef(0, 1.15f + reboteCuerpo, 0.45f);
+        gl.glRotatef(-20 + balanceoCabeza * 8, 1, 0, 0);
+        gl.glScalef(0.2f, 0.4f, 0.2f);
+        glut.glutSolidCube(1.0f);
         gl.glPopMatrix();
 
-        // ----- Orejas -----
-        float[] earOffsets = {-0.1f, 0.1f};
-        for (float ex : earOffsets) {
+        // CABEZA 
+        gl.glPushMatrix();
+        gl.glTranslatef(0, 1.45f + reboteCuerpo + balanceoCabeza, 0.7f);
+        gl.glRotatef(balanceoCabeza * 5, 1, 0, 0);
+        gl.glScalef(0.3f, 0.25f, 0.35f);
+        glut.glutSolidCube(1.0f);
+        gl.glPopMatrix();
+
+        // HOCICO 
+        gl.glPushMatrix();
+        gl.glTranslatef(0, 1.38f + reboteCuerpo + balanceoCabeza, 0.9f);
+        gl.glScalef(0.2f, 0.18f, 0.2f);
+        glut.glutSolidCube(1.0f);
+        gl.glPopMatrix();
+
+        // OREJAS 
+        float[] earX = {-0.1f, 0.1f};
+        for (float ex : earX) {
             gl.glPushMatrix();
-            gl.glTranslatef(ex, 1.95f, 1.15f);
-            gl.glRotatef(-20, 1, 0, 0);
-            gl.glScalef(0.1f, 0.25f, 0.1f);
-            glut.glutSolidCone(0.5, 1.0, 6, 1);
+            gl.glTranslatef(ex, 1.6f + reboteCuerpo + balanceoCabeza, 0.65f);
+            gl.glScalef(0.08f, 0.2f, 0.08f);
+            glut.glutSolidCube(1.0f);
             gl.glPopMatrix();
         }
 
-        // ----- Patas -----
-        float[] pX = {-0.35f, 0.35f};
-        float[] pZ = {-0.4f, 0.7f};
-        for (float px : pX) {
-            for (float pz : pZ) {
+        // PATAS 
+        float[] pX = {-0.18f, 0.18f};
+        float[] pZ = {-0.3f, 0.35f};
+
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                float fase = (float) ((j == 0) ? 
+                        ((i == 0) ? ciclo : ciclo + Math.PI) :
+                        ((i == 0) ? ciclo + Math.PI : ciclo));
+                float despPata = (float) Math.sin(fase) * 0.2f;
+
                 gl.glPushMatrix();
-                gl.glTranslatef(px, 0.5f, pz);
-                float angX = (px > 0 ? 5 : -5);
-                gl.glRotatef(angX, 0, 0, 1);
-                gl.glScalef(0.15f, 0.7f, 0.15f);
-                glut.glutSolidCylinder(0.5, 1.0, 8, 1);
+                gl.glTranslatef(pX[i], 0.25f, pZ[j] + despPata);
+                gl.glRotatef(despPata * 20, 1, 0, 0);
+                gl.glScalef(0.12f, 0.45f, 0.12f);
+                glut.glutSolidCube(1.0f);
                 gl.glPopMatrix();
             }
         }
 
-        // ----- Cola -----
+        // COLA 
         gl.glPushMatrix();
-        gl.glTranslatef(0, 1.0f, -0.9f);
-        gl.glRotatef(-25, 1, 0, 0);
-        gl.glScalef(0.12f, 0.6f, 0.12f);
-        glut.glutSolidCylinder(0.5, 1.0, 6, 1);
+        gl.glTranslatef(0, 0.85f + reboteCuerpo, -0.55f);
+        gl.glRotatef(-30 + (float)Math.sin(ciclo * 0.7f) * 10, 1, 0, 0);
+        gl.glScalef(0.1f, 0.35f, 0.1f);
+        glut.glutSolidCube(1.0f);
         gl.glPopMatrix();
 
         gl.glPopMatrix();
