@@ -5,3 +5,4 @@ Alumno: Sanchez Herrera Cesar Antonio
 
 Para inicializar el proyecto:
 ejecuar "Main.java" ubicado en src/horseultimate
+en la rama de "Actualización"
